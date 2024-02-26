@@ -2,11 +2,25 @@ namespace SpriteKind {
     export const Entity = SpriteKind.create()
     export const Entity2 = SpriteKind.create()
     export const F_Entity = SpriteKind.create()
+    export const E_Projectile = SpriteKind.create()
 }
 function EntityShoot (FamEntity: Sprite) {
-	
+    ShootInterval = 1000
+    GameTime = game.runtime()
+    if (GameTime - PreviousShot > ShootInterval) {
+        PreviousShot = GameTime
+        ShotSpeed = randint(60, 70)
+        EntityProjectile = sprites.create(E_ProjectileList._pickRandom(), SpriteKind.E_Projectile)
+        EntityProjectile.setVelocity(ShotSpeed, 0)
+        EntityProjectile.setPosition(FamiliarEntity.x, FamiliarEntity.y)
+        ShotAngle = Math.atan2(Eli.y - FamEntity.y, Eli.x - FamEntity.x)
+        EntityProjectile.setVelocity(ShotSpeed * Math.cos(ShotAngle), ShotSpeed * Math.sin(ShotAngle))
+    }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Entity2, function (sprite, otherSprite) {
+    tiles.setCurrentTilemap(tilemap`level23`)
+    game.splash("Press Spacebar to melee attack")
+    game.splash("Press X to make an explosion (10 second cooldown)")
     sprites.destroy(otherSprite, effects.ashes, 100)
     tiles.setCurrentTilemap(tilemap`level7`)
     FamiliarEntity = sprites.create(img`
@@ -129,6 +143,17 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Entity2, function (sprite, other
     timer.after(9000, function () {
         controller.moveSprite(Eli, 100, 100)
     })
+    timer.after(15000, function () {
+        CanShoot = 1
+    })
+    statusbar = statusbars.create(20, 4, StatusBarKind.Health)
+    statusbar.value = 10000
+    statusbar.attachToSprite(FamiliarEntity)
+    for (let index = 0; index < 4; index++) {
+        timer.after(10000, function () {
+            E_ProjectileList.push(Future_Projectiles.removeAt(randint(0, Future_Projectiles.length)))
+        })
+    }
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (HumanMove == 1) {
@@ -317,6 +342,269 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         )
         Direction1 = 4
     }
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (ScratchAttack == 1) {
+        if (can_attack == 0) {
+            if (controller.down.isPressed()) {
+                animation.runImageAnimation(
+                Eli,
+                [img`
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ..........ffff..................
+                    ........ff1111ff................
+                    .......fb111111bf...............
+                    .....fffc111111cfff.............
+                    ...fc111cd1111dc111cf...........
+                    ...f1b1b1b1111b1b1b1f...........
+                    ...fbfbffcf11fcdfbfbf...........
+                    ...777f7f111111b7f777...........
+                    ....777ccbdb1b1fc777............
+                    ......7fffbfbfdff7..............
+                    ........fffffffff...............
+                    ........fffffffff...............
+                    .........fffffff................
+                    .........fffffff................
+                    ..........fffff.................
+                    ...........fff..................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    `,img`
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ..........ffff..................
+                    ........ff1111ff................
+                    .......fb111111bf...............
+                    .......f11111111f...............
+                    ......fd11111111df..............
+                    ...77.fd11111111df.77...........
+                    ..77..fd11111111df..77..........
+                    ..77..fd11111111df..77..........
+                    ..77..fddd1111dddf..77..........
+                    ..777.fbdbfddfbdbf.777..........
+                    ..7777fcdcf11fcdcf7777..........
+                    ...777fffbdb1bdfff777...........
+                    ...7fcb1bcffffcb1bcf7...........
+                    ...7f1c1c1ffff1c1c1f7...........
+                    ...7fdfdfdffffdfdfdf7...........
+                    ...77f7f7f7777f7f7f7............
+                    ....77.7.77..77.7.7.............
+                    ......................f.........
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    `,img`
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    .....77...ffff....77............
+                    ...7777.ff1111ff..7777..........
+                    ..7777.fb111111bf..7777.........
+                    ..777..f11111111f...777.........
+                    .777..fd11111111df...777........
+                    .777..fdd111111ddf...777........
+                    .777..fbdd1111dddf...777........
+                    .777..fcdbfddfbdbf...777........
+                    .777...fbcf11fcbff...777........
+                    .777...ffb1111bcf....777........
+                    ..777...fcdb1bdf....777.........
+                    ..777..fffffffffff..777.........
+                    ..777fcb1bcfffcb1bcf777.........
+                    ...77f1b1b1fff1b1b1f77..........
+                    ....77ffbff777ffbff77...........
+                    .....777777...777777............
+                    .....777777...777777............
+                    ......7.7.7...7.7.7.............
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    `,img`
+                    .......777777777................
+                    .....7777777777777..............
+                    ....777777777777777.............
+                    ...77777777777777777............
+                    ..77777777ffff7777777...........
+                    .7777777ff1111ff777777..........
+                    .777777fb111111bf777777.........
+                    7777777f11111111f777777.........
+                    777777fd11111111df777777........
+                    777777fdd111111ddf777777........
+                    777777fbdd1111dddf777777........
+                    777777fcdbfddfbdbf777777........
+                    7777777fbcf11fcbff777777........
+                    7777777ffb1111bcf7777777........
+                    77777777fcdb1bdf7777777.........
+                    7777777fffffffffff77777.........
+                    .7777fcb1bcfffcb1bcf777.........
+                    .7777f1b1b1fff1b1b1f77..........
+                    ..7777ffbff777ffbff77...........
+                    ...77777777777777777............
+                    ....7777777777777777............
+                    .....77777777777777.............
+                    .......777777777................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    ................................
+                    `],
+                100,
+                false
+                )
+                can_attack = 1
+                timer.after(10000, function () {
+                    can_attack = 0
+                })
+            }
+        }
+    }
+})
+statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.EQ, statusbars.ComparisonType.Percentage, 50, function (status) {
+    animation.runImageAnimation(
+    FamiliarEntity,
+    [img`
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........ffffffff........
+        .......ffffffffff.......
+        .......ffffffffff.......
+        .......ff11ff11ff.......
+        .......ff11ff11ff.......
+        .......ff2ffff2ff.......
+        ........f2ffff2f........
+        ......ffffffffffff......
+        ......ffffffffffff......
+        ......ffffffffffff......
+        ......ff.ffffff.ff......
+        .........ff..ff.........
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        `,img`
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........ffffffff........
+        .......ffffffffff.......
+        .......ffffffffff.......
+        .......ff11ff11ff.......
+        .......ff11ff11ff.......
+        .......ff2ffff2ff.......
+        ........f2ffff2f........
+        .fffffff2f2fff2ffffffff.
+        .fffffffff2ff2fffffffff.
+        .fff.....ffffff.....fff.
+        .........ffffff.........
+        .........ff..ff.........
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        `,img`
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........ffffffff........
+        .......ffffffffff.......
+        .......ffffffffff.......
+        .......ff11ff11ff.......
+        .......ff11ff11ff.......
+        .......ff2ffff2ff.......
+        ........f2ffff2f........
+        .fffffff22ffff2ffffffff.
+        .fffffff22fff222fffffff.
+        .fff...2.22ff2f2....fff.
+        .........2fffff.........
+        .........ffffff.........
+        ........ffffffff........
+        ........fff..fff........
+        ........fff..fff........
+        .......ffff..ffff.......
+        .....fffff....fffff.....
+        .....fffff....fffff.....
+        `,img`
+        ........................
+        .........ffffff.........
+        ........ffffffff........
+        ........f11ff11f........
+        ........f11ff11f........
+        ........f22ff22f........
+        ........f2ffff2f........
+        .........2ffff2.........
+        ....fffff2ffff2fffff....
+        ...fffff22fff22ffffff...
+        ..fffff2f2fff22fffffff..
+        .ffffff2f22f2f22fffffff.
+        .fffff..f22f2f2f2.fffff.
+        .ffff...f2ffff2f...ffff.
+        .fff....f2ffffff....fff.
+        .ffff...f2ffffff...ffff.
+        .fffff...ffffff...fffff.
+        .fffff...ffffff...fffff.
+        .fffff..ffffffff..fffff.
+        ..ffff..fff..fff..ffff..
+        ........fff..fff........
+        .......ffff..ffff.......
+        .....fffff....fffff.....
+        .....fffff....fffff.....
+        `],
+    2000,
+    false
+    )
+    FamiliarEntity.follow(Eli, 0)
+    timer.after(5000, function () {
+        FamiliarEntity.follow(Eli, 70)
+        tiles.setCurrentTilemap(tilemap`level20`)
+    })
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (ScratchAttack == 1) {
@@ -520,9 +808,9 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                     ..444444ffffffff........
                     ..4...4fb111111bf.......
                     ......4f11111111f.......
-                    ......f11d111dd11f......
-                    ......f11d1111d11f......
-                    ......fddd11111ddf......
+                    ......f1111111111f......
+                    ......fd11111111df......
+                    ......fdd111111ddf......
                     ......fbd111111dbf......
                     ......fcd111111dcf......
                     .......fb111111bfb......
@@ -771,6 +1059,102 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             }
         }
     }
+})
+scene.onHitWall(SpriteKind.E_Projectile, function (sprite, location) {
+    animation.runImageAnimation(
+    sprite,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 2 1 2 . . . . . . 
+        . . . . . . . 2 1 2 . . . . . . 
+        . . . . . . . 2 1 2 . . . . . . 
+        . . . . . . . 3 1 3 . . . . . . 
+        . . . . . . 2 3 1 3 2 . . . . . 
+        . . . . . . 2 1 1 1 2 . . . . . 
+        . . . . . . 2 1 1 1 3 . . . . . 
+        . . . . . . 3 1 1 1 3 . . . . . 
+        . . . . . . 3 1 1 1 3 . . . . . 
+        . . . . . . 3 1 1 1 3 . . . . . 
+        . . . . . . 2 3 1 3 2 . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 2 3 3 3 3 3 2 . . . . 
+        . . . . 3 1 1 1 1 1 1 1 3 . . . 
+        . . . . 1 1 1 1 1 1 1 1 1 . . . 
+        . . . 2 1 1 1 1 1 1 1 1 1 2 . . 
+        . . . 2 3 1 1 1 1 1 1 3 3 2 . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 4 4 4 4 4 . . . . . . 
+        . . . 4 4 4 5 5 5 d 4 4 4 4 . . 
+        . . 4 d 5 d 5 5 5 d d d 4 4 . . 
+        . . 4 5 5 1 1 1 d d 5 5 5 4 . . 
+        . 4 5 5 5 1 1 1 5 1 1 5 5 4 4 . 
+        . 4 d d 1 1 5 5 5 1 1 5 5 d 4 . 
+        . 4 5 5 1 1 5 1 1 5 5 d d d 4 . 
+        . 2 5 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . 2 d 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . . 2 4 d d 5 5 5 5 d d 5 4 . . 
+        . . . 2 2 4 d 5 5 d d 4 4 . . . 
+        . . 2 2 2 2 2 4 4 4 2 2 2 . . . 
+        . . . 2 2 4 4 4 4 4 4 2 2 . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        `,img`
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . 2 4 4 4 5 5 4 4 4 2 2 2 . 
+        . 2 2 5 5 d 4 5 5 5 4 4 4 4 2 . 
+        . 2 4 5 5 5 5 d 5 5 5 4 5 4 2 2 
+        . 2 4 d d 5 5 5 5 5 5 d 4 4 4 2 
+        2 4 5 5 d 5 5 5 d d d 5 5 5 4 4 
+        2 4 5 5 4 4 4 d 5 5 d 5 5 5 4 4 
+        4 4 4 4 . . 2 4 5 5 . . 4 4 4 4 
+        . . b b b b 2 4 4 2 b b b b . . 
+        . b d d d d 2 4 4 2 d d d d b . 
+        b d d b b b 2 4 4 2 b b b d d b 
+        b d d b b b b b b b b b b d d b 
+        b b d 1 1 3 1 1 d 1 d 1 1 d b b 
+        . . b b d d 1 1 3 d d 1 b b . . 
+        . . 2 2 4 4 4 4 4 4 4 4 2 2 . . 
+        . . . 2 2 4 4 4 4 4 2 2 2 . . . 
+        `,img`
+        . . . . . . . . b b . . . . . . 
+        . . . . . . . . b b . . . . . . 
+        . . . b b b . . . . . . . . . . 
+        . . b d d b . . . . . . . b b . 
+        . b d d d b . . . . . . b d d b 
+        . b d d b . . . . b b . b d d b 
+        . b b b . . . . . b b . . b b . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . b b b d d d d d d b b b . . 
+        . b d c c c b b b b c c d d b . 
+        b d d c b . . . . . b c c d d b 
+        c d d b b . . . . . . b c d d c 
+        c b d d d b b . . . . b d d c c 
+        . c c b d d d d b . c c c c c c 
+        . . . c c c c c c . . . . . . . 
+        `],
+    100,
+    false
+    )
+    timer.after(400, function () {
+        sprites.destroy(sprite, effects.ashes, 100)
+    })
 })
 function Animation () {
     moving = controller.left.isPressed() || (controller.up.isPressed() || (controller.right.isPressed() || controller.down.isPressed()))
@@ -1288,9 +1672,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Entity, function (sprite, otherS
     200,
     false
     )
-    timer.after(500, function () {
-        tiles.setCurrentTilemap(tilemap`level5`)
-    })
+    tiles.setCurrentTilemap(tilemap`level5`)
     Orb = sprites.create(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . 6 6 6 6 . . . . . . 
@@ -1314,6 +1696,12 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Entity, function (sprite, otherS
     HumanMove = 2
     timer.after(500, function () {
         tiles.setCurrentTilemap(tilemap`level4`)
+    })
+})
+statusbars.onZero(StatusBarKind.Health, function (status) {
+    sprites.destroy(FamiliarEntity, effects.disintegrate, 2000)
+    timer.after(4000, function () {
+        game.gameOver(true)
     })
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -1452,6 +1840,13 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         true
         )
         Direction1 = 7
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.F_Entity, function (sprite, otherSprite) {
+    if (can_attack == 1) {
+        statusbar.value += -1
+    } else {
+        info.changeLifeBy(-1)
     }
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -1642,8 +2037,109 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         Direction1 = 5
     }
 })
+info.onLifeZero(function () {
+    game.gameOver(false)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.E_Projectile, function (sprite, otherSprite) {
+    animation.runImageAnimation(
+    otherSprite,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 2 1 2 . . . . . . 
+        . . . . . . . 2 1 2 . . . . . . 
+        . . . . . . . 2 1 2 . . . . . . 
+        . . . . . . . 3 1 3 . . . . . . 
+        . . . . . . 2 3 1 3 2 . . . . . 
+        . . . . . . 2 1 1 1 2 . . . . . 
+        . . . . . . 2 1 1 1 3 . . . . . 
+        . . . . . . 3 1 1 1 3 . . . . . 
+        . . . . . . 3 1 1 1 3 . . . . . 
+        . . . . . . 3 1 1 1 3 . . . . . 
+        . . . . . . 2 3 1 3 2 . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 2 3 3 3 3 3 2 . . . . 
+        . . . . 3 1 1 1 1 1 1 1 3 . . . 
+        . . . . 1 1 1 1 1 1 1 1 1 . . . 
+        . . . 2 1 1 1 1 1 1 1 1 1 2 . . 
+        . . . 2 3 1 1 1 1 1 1 3 3 2 . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 4 4 4 4 4 . . . . . . 
+        . . . 4 4 4 5 5 5 d 4 4 4 4 . . 
+        . . 4 d 5 d 5 5 5 d d d 4 4 . . 
+        . . 4 5 5 1 1 1 d d 5 5 5 4 . . 
+        . 4 5 5 5 1 1 1 5 1 1 5 5 4 4 . 
+        . 4 d d 1 1 5 5 5 1 1 5 5 d 4 . 
+        . 4 5 5 1 1 5 1 1 5 5 d d d 4 . 
+        . 2 5 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . 2 d 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . . 2 4 d d 5 5 5 5 d d 5 4 . . 
+        . . . 2 2 4 d 5 5 d d 4 4 . . . 
+        . . 2 2 2 2 2 4 4 4 2 2 2 . . . 
+        . . . 2 2 4 4 4 4 4 4 2 2 . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        `,img`
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . 2 4 4 4 5 5 4 4 4 2 2 2 . 
+        . 2 2 5 5 d 4 5 5 5 4 4 4 4 2 . 
+        . 2 4 5 5 5 5 d 5 5 5 4 5 4 2 2 
+        . 2 4 d d 5 5 5 5 5 5 d 4 4 4 2 
+        2 4 5 5 d 5 5 5 d d d 5 5 5 4 4 
+        2 4 5 5 4 4 4 d 5 5 d 5 5 5 4 4 
+        4 4 4 4 . . 2 4 5 5 . . 4 4 4 4 
+        . . b b b b 2 4 4 2 b b b b . . 
+        . b d d d d 2 4 4 2 d d d d b . 
+        b d d b b b 2 4 4 2 b b b d d b 
+        b d d b b b b b b b b b b d d b 
+        b b d 1 1 3 1 1 d 1 d 1 1 d b b 
+        . . b b d d 1 1 3 d d 1 b b . . 
+        . . 2 2 4 4 4 4 4 4 4 4 2 2 . . 
+        . . . 2 2 4 4 4 4 4 2 2 2 . . . 
+        `,img`
+        . . . . . . . . b b . . . . . . 
+        . . . . . . . . b b . . . . . . 
+        . . . b b b . . . . . . . . . . 
+        . . b d d b . . . . . . . b b . 
+        . b d d d b . . . . . . b d d b 
+        . b d d b . . . . b b . b d d b 
+        . b b b . . . . . b b . . b b . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . b b b d d d d d d b b b . . 
+        . b d c c c b b b b c c d d b . 
+        b d d c b . . . . . b c c d d b 
+        c d d b b . . . . . . b c d d c 
+        c b d d d b b . . . . b d d c c 
+        . c c b d d d d b . c c c c c c 
+        . . . c c c c c c . . . . . . . 
+        `],
+    100,
+    false
+    )
+    info.changeLifeBy(-5)
+    timer.after(400, function () {
+        sprites.destroy(otherSprite, effects.ashes, 100)
+    })
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
     sprites.destroy(otherSprite, effects.disintegrate, 500)
+    info.setLife(100)
     ScratchAttack = 1
     can_attack = 0
     MysteriousEntity2 = sprites.create(img`
@@ -1665,6 +2161,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSpr
         . . . . . f f . . f f . . . . . 
         `, SpriteKind.Entity2)
     tiles.placeOnTile(MysteriousEntity2, tiles.getTileLocation(1, 22))
+    timer.after(1800, function () {
+        MysteriousEntity2.follow(Eli, 150)
+    })
 })
 let MysteriousEntity2: Sprite = null
 let Orb: Sprite = null
@@ -1672,7 +2171,17 @@ let moving = false
 let can_attack = 0
 let ScratchAttack = 0
 let Direction1 = 0
+let statusbar: StatusBarSprite = null
+let CanShoot = 0
+let ShotAngle = 0
 let FamiliarEntity: Sprite = null
+let EntityProjectile: Sprite = null
+let ShotSpeed = 0
+let PreviousShot = 0
+let GameTime = 0
+let ShootInterval = 0
+let Future_Projectiles: Image[] = []
+let E_ProjectileList: Image[] = []
 let MusicCounter = 0
 let MysteriousEntity: Sprite = null
 let HumanMove = 0
@@ -1719,6 +2228,190 @@ controller.moveSprite(Eli)
 tiles.setCurrentTilemap(tilemap`level1`)
 tiles.placeOnTile(MysteriousEntity, tiles.getTileLocation(4, 13))
 MusicCounter = 1
+E_ProjectileList = [img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . f f f f . . . . . . 
+    . . . . f 2 2 2 2 2 f f . . . . 
+    . . . 2 2 1 1 1 2 2 2 f f . . . 
+    . . f 2 1 1 1 f f f f 2 f f . . 
+    . . 2 1 1 1 2 f f f f 2 2 f . . 
+    . f 2 2 1 2 f f f f f 2 2 f f . 
+    . f 2 2 2 f f f 2 2 2 2 2 2 f . 
+    . f f 2 2 f f 2 2 2 2 2 2 2 2 . 
+    . f f 2 2 f f 2 2 2 2 2 2 2 2 . 
+    . . f f 2 2 f 2 2 2 2 2 f 2 . . 
+    . . f f f 2 f f 2 2 2 f 2 2 . . 
+    . . . 2 f f f f f f f f 2 . . . 
+    . . . . 2 2 f f f f f f . . . . 
+    . . . . . . f f f f . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `]
+Future_Projectiles = [
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 3 3 3 3 . . . . . . 
+    . . . . 3 2 2 1 1 1 3 3 . . . . 
+    . . . 2 1 1 2 2 1 1 1 3 3 . . . 
+    . . 3 3 1 1 2 2 2 2 1 3 3 3 . . 
+    . . 2 2 2 1 1 2 2 2 3 3 3 3 . . 
+    . 3 2 2 2 2 2 2 2 2 3 3 3 3 3 . 
+    . 3 1 2 2 2 2 2 1 1 1 3 3 1 3 . 
+    . 3 3 1 1 2 2 1 1 1 1 1 2 1 1 . 
+    . 3 2 1 1 2 2 1 1 1 1 1 2 1 1 . 
+    . . 3 2 1 1 2 1 1 1 1 1 2 1 . . 
+    . . 3 2 2 1 2 2 1 1 1 2 2 1 . . 
+    . . . 3 2 2 2 2 2 2 2 2 3 . . . 
+    . . . . 1 1 2 2 2 2 3 3 . . . . 
+    . . . . . . 3 3 3 3 . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 6 6 6 6 . . . . . . 
+    . . . . 6 6 6 5 5 6 6 6 . . . . 
+    . . . 7 7 7 7 6 6 6 6 6 6 . . . 
+    . . 6 7 7 7 7 8 8 8 1 1 6 6 . . 
+    . . 7 7 7 7 7 8 8 8 1 1 5 6 . . 
+    . 6 7 7 7 7 8 8 8 8 8 5 5 6 6 . 
+    . 6 7 7 7 8 8 8 6 6 6 6 5 6 6 . 
+    . 6 6 7 7 8 8 6 6 6 6 6 6 6 6 . 
+    . 6 8 7 7 8 8 6 6 6 6 6 6 6 6 . 
+    . . 6 8 7 7 8 6 6 6 6 6 8 6 . . 
+    . . 6 8 8 7 8 8 6 6 6 8 6 6 . . 
+    . . . 6 8 8 8 8 8 8 8 8 6 . . . 
+    . . . . 6 6 8 8 8 8 6 6 . . . . 
+    . . . . . . 6 6 6 6 . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 6 6 6 6 . . . . . . 
+    . . . . 6 9 9 9 9 9 6 6 . . . . 
+    . . . 9 9 1 1 1 9 9 9 6 6 . . . 
+    . . 6 9 1 1 1 8 8 8 8 9 6 6 . . 
+    . . 9 1 1 1 9 8 8 8 8 9 9 6 . . 
+    . 6 9 9 1 9 8 8 8 8 8 9 9 6 6 . 
+    . 6 9 9 9 8 8 8 6 6 6 9 9 9 6 . 
+    . 6 6 9 9 8 8 6 6 6 6 6 9 9 9 . 
+    . 6 8 9 9 8 8 6 6 6 6 6 9 9 9 . 
+    . . 6 8 9 9 8 6 6 6 6 6 8 9 . . 
+    . . 6 8 8 9 8 8 6 6 6 8 9 9 . . 
+    . . . 9 8 8 8 8 8 8 8 8 9 . . . 
+    . . . . 9 9 8 8 8 8 6 6 . . . . 
+    . . . . . . 6 6 6 6 . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . a a a a . . . . . . 
+    . . . . a a b b b b a a . . . . 
+    . . . a b 1 1 1 b b b a a . . . 
+    . . a b 1 1 1 b c c c b a a . . 
+    . . b 1 1 1 b c c c c b b a . . 
+    . a b b 1 b c c c c a b b a a . 
+    . a b b b c c c a a a b b b a . 
+    . a a b b c c a a a a a b b a . 
+    . a c b b c c a a a a a b b b . 
+    . . a c b b c a a a a a c b . . 
+    . . a c c b c c a a a c b a . . 
+    . . . b c c c c c c c c a . . . 
+    . . . . b b c c c c a a . . . . 
+    . . . . . . a a a a . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . c c c c . . . . . . 
+    . . . . c a a a a a c c . . . . 
+    . . . a a 1 1 1 a a a c c . . . 
+    . . c a 1 1 1 f f f f a c c . . 
+    . . a 1 1 1 a f f f f a a c . . 
+    . c a a 1 a f f f f f a a c c . 
+    . c a a a f f f c c c a a a c . 
+    . c c a a f f c c c c c a a a . 
+    . c f a a f f c c c c c a a a . 
+    . . c f a a f c c c c c f a . . 
+    . . c f f a f f c c c f a a . . 
+    . . . a f f f f f f f f a . . . 
+    . . . . a a f f f f c c . . . . 
+    . . . . . . c c c c . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 3 2 2 2 . . . . . . 
+    . . . . 3 3 2 3 3 3 2 3 . . . . 
+    . . . 2 3 2 3 2 2 2 3 3 2 . . . 
+    . . 3 3 2 2 1 1 1 1 1 3 2 2 . . 
+    . . 3 2 1 2 2 1 1 1 3 3 3 2 . . 
+    . 2 3 2 1 1 2 2 1 3 3 1 3 2 2 . 
+    . 2 3 2 1 1 1 2 3 3 1 1 3 3 3 . 
+    . 2 3 2 1 1 3 3 2 1 1 1 2 3 3 . 
+    . 3 2 3 1 3 3 1 2 2 1 1 2 3 3 . 
+    . . 2 3 3 3 1 1 1 2 2 1 2 3 . . 
+    . . 2 3 1 1 1 1 1 1 2 2 3 3 . . 
+    . . . 3 2 3 2 2 2 2 3 3 2 . . . 
+    . . . . 3 2 3 3 2 2 2 2 . . . . 
+    . . . . . . 2 2 3 3 . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . e e e e . . . . . . 
+    . . . . e e 7 e e 7 e e . . . . 
+    . . . e 7 7 7 7 7 7 7 7 e . . . 
+    . . e e 7 7 7 7 7 e 1 1 7 e . . 
+    . . e e e e 7 e e e 1 1 e e . . 
+    . e 7 7 7 e e e e e e e 7 7 e . 
+    . e 7 7 7 e e e e 7 7 7 7 7 e . 
+    . e e e e e e 7 e e 7 7 7 7 e . 
+    . e e e e e e 7 7 e e e 7 e e . 
+    . . e e 7 7 7 7 7 7 7 e e e . . 
+    . . e e e 7 e 7 7 7 7 e e e . . 
+    . . . e e e e 7 7 e e e e . . . 
+    . . . . e e e e e e e e . . . . 
+    . . . . . . e e e e . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `,
+img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 4 4 4 4 . . . . . . 
+    . . . . 4 5 5 5 5 4 4 4 . . . . 
+    . . . 5 5 1 1 1 5 4 4 4 4 . . . 
+    . . 4 5 1 1 1 2 2 2 2 5 4 4 . . 
+    . 4 5 1 1 1 5 2 2 2 2 5 5 4 4 . 
+    . 4 5 5 1 5 2 2 2 2 2 5 5 5 4 . 
+    . 4 5 5 5 2 2 2 4 4 4 4 5 5 4 . 
+    . 4 4 5 5 2 2 4 4 4 4 4 4 5 4 . 
+    . 4 2 5 5 2 2 4 4 4 4 4 4 4 4 . 
+    . 4 4 2 5 5 2 4 4 4 4 4 2 4 4 . 
+    . . 4 2 2 5 2 2 4 4 4 2 4 4 . . 
+    . . . 4 2 2 2 2 2 2 2 2 4 . . . 
+    . . . . 4 4 2 2 2 2 4 4 . . . . 
+    . . . . . . 4 4 4 4 . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `
+]
+Eli.sayText("It's a beautiful day at the beach!!")
+timer.after(6000, function () {
+    Eli.sayText("Wait")
+    timer.after(1750, function () {
+        Eli.sayText("Where is everyone?")
+        timer.after(3500, function () {
+            Eli.sayText("And what is that thing in the ocean?")
+            tiles.setCurrentTilemap(tilemap`level0`)
+        })
+        timer.after(5750, function () {
+            Eli.sayText("")
+            MysteriousEntity.follow(Eli, 150)
+        })
+    })
+})
 game.onUpdate(function () {
     Animation()
+})
+game.onUpdate(function () {
+    if (sprites.allOfKind(SpriteKind.F_Entity).length > 0 && CanShoot == 1) {
+        EntityShoot(FamiliarEntity)
+    }
 })
