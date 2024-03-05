@@ -1210,11 +1210,12 @@ statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.EQ,
             .....fffff....fffff.....
             .....fffff....fffff.....
             `],
-        2000,
+        1000,
         false
         )
+        statusbar.value = 10000000
         FamiliarEntity.follow(Eli, 0)
-        timer.after(5000, function () {
+        timer.after(2000, function () {
             animation.runImageAnimation(
             FamiliarEntity,
             [img`
@@ -1324,6 +1325,9 @@ statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.EQ,
             statusbar.value = 5000
             FamiliarEntity.follow(Eli, 70)
             tiles.setCurrentTilemap(tilemap`level20`)
+            timer.after(5000, function () {
+                TransformDone = 1
+            })
         })
     }
 })
@@ -2409,6 +2413,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Entity, function (sprite, otherS
         `)
     music.play(music.melodyPlayable(music.sonar), music.PlaybackMode.UntilDone)
     timer.after(2000, function () {
+        Music = 1
         scene.setBackgroundImage(img`
             ................................................................................................................................................................
             ................................................................................................................................................................
@@ -2706,7 +2711,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Entity, function (sprite, otherS
 statusbars.onZero(StatusBarKind.Health, function (status) {
     sprites.destroy(FamiliarEntity, effects.disintegrate, 2000)
     Eli.sayText("I defeated him!!!")
+    TransformDone = 0
     timer.after(4000, function () {
+        Music = 0
         controller.moveSprite(Eli, 0, 0)
         Eli.sayText("")
         HumanMove = 3
@@ -3185,6 +3192,7 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 info.onLifeZero(function () {
+    TransformDone = 1
     sprites.destroy(Eli, effects.none, 100)
     sprites.destroy(FamiliarEntity, effects.none, 100)
     tiles.setCurrentTilemap(tilemap`level5`)
@@ -3417,6 +3425,17 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.E_Projectile, function (sprite, 
         })
     }
 })
+function BossMapSelector (numMap: number) {
+    if (numMap == 0) {
+        tiles.setCurrentTilemap(tilemap`level20`)
+    }
+    if (numMap == 1) {
+        tiles.setCurrentTilemap(tilemap`level42`)
+    }
+    if (numMap == 2) {
+        tiles.setCurrentTilemap(tilemap`level45`)
+    }
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
     music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite, effects.disintegrate, 500)
@@ -3464,6 +3483,7 @@ let ShotRepeat = 0
 let PreviousShot = 0
 let GameTime = 0
 let ShootInterval = 0
+let TransformDone = 0
 let Transform = 0
 let Future_Projectiles: Image[] = []
 let E_ProjectileList: Image[] = []
@@ -3471,6 +3491,8 @@ let MusicCounter = 0
 let MysteriousEntity: Sprite = null
 let HumanMove = 0
 let Eli: Sprite = null
+let Music = 0
+Music = 0
 Eli = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
@@ -3693,11 +3715,17 @@ timer.after(6000, function () {
     })
 })
 Transform = 0
+TransformDone = 0
 game.onUpdate(function () {
     Animation()
 })
 game.onUpdate(function () {
     if (sprites.allOfKind(SpriteKind.F_Entity).length > 0 && CanShoot == 1) {
         EntityShoot(FamiliarEntity)
+    }
+})
+game.onUpdateInterval(5000, function () {
+    if (TransformDone == 1) {
+        BossMapSelector(randint(0, 2))
     }
 })
